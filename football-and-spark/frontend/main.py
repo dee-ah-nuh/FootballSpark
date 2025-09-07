@@ -11,6 +11,7 @@ from get_all_leagues import sqlite_get_all_leagues, sqlite_insert_leagues #type:
 
 import uvicorn 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -27,7 +28,9 @@ class LeagueSeasons(BaseModel):
     league_id: int
     season: str
 
+
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
 origins = [
     "http://localhost:3000"]
@@ -48,7 +51,6 @@ app.add_middleware(
 async def get_leagues():
     # query from sqlite db
     leagues = sqlite_get_all_leagues()
-
     return leagues
 
 @app.post("/leagues", response_model=League)
@@ -60,3 +62,4 @@ async def create_leagues(leagues: List[League]):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

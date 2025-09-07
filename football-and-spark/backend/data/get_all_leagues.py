@@ -8,7 +8,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '../database/utils'))
 from sqlite_utils import insert_dataframe_to_stage_table  # type: ignore
 
-
+# Fetch all leagues from API-Football and save to JSON
 def get_all_leagues():
     """
     Fetches all leagues from the API-Football and saves to a JSON file.
@@ -25,18 +25,12 @@ def get_all_leagues():
     data = res.read()
     # data = data.decode("utf-8")
 
+    print(data)
+
     data = json.loads(data)
 
-    # output_dir = os.path.join(os.path.dirname(__file__), "json_data")
-    # os.makedirs(output_dir, exist_ok=True)
-    # output_path = os.path.join(output_dir, f"all_leagues.json")
-    # with open(output_path, "w") as f:
-    #     json.dump(json.loads(res.read().decode("utf-8")), f, indent=2)
-
     return data
-
-
-
+# Parse the leagues JSON into two DataFrames: leagues_df and league_seasons_df
 def get_all_leagues_parser(data):
     """
     Loads the API-Football leagues JSON and returns:
@@ -126,8 +120,7 @@ def get_all_leagues_parser(data):
     league_seasons_df = league_seasons_df.sort_values(["league_id", "season_year"]).reset_index(drop=True)
 
     return leagues_df, league_seasons_df
-
-
+# Simple SQLite helpers to get/insert leagues data for FastAPI
 def sqlite_get_all_leagues():
     db_path = os.path.join(os.path.dirname(__file__), '../../backend/database/football_data.db')
     conn = sqlite3.connect(db_path)
@@ -149,8 +142,7 @@ def sqlite_get_all_leagues():
         for row in rows
     ]
     return leagues
-
-
+# Insert leagues into SQLite
 def sqlite_insert_leagues(leagues):
     db_path = os.path.join(os.path.dirname(__file__), '../database/football_data.db')
     conn = sqlite3.connect(db_path)
@@ -169,8 +161,7 @@ def sqlite_insert_leagues(leagues):
         ))
     conn.commit()
     conn.close()
-
-
+# Full ETL function to fetch, parse, and insert leagues data
 def get_leagues_etl(db_path=None):
 
     # 1. Fetch data

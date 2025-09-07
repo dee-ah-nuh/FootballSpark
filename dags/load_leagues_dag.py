@@ -1,3 +1,19 @@
+from __future__ import annotations
+from pathlib import Path
+import sys
+
+DAGS_DIR = Path(__file__).resolve().parent
+DATA_DIR = (DAGS_DIR / ".." / "football-and-spark" / "backend" / "data").resolve()
+UTILS_DIR = (DAGS_DIR / ".." / "football-and-spark" / "backend" / "database" / "utils").resolve()
+
+for p in (DATA_DIR, UTILS_DIR):
+    if not p.exists():
+        raise RuntimeError(f"Missing mount: {p}")
+    sys.path.insert(0, str(p))
+
+from get_all_leagues import get_leagues_etl 
+
+
 from airflow import DAG
 # Airflow 3.x
 from airflow.providers.standard.operators.python import (
@@ -9,21 +25,13 @@ from airflow.providers.standard.operators.python import (
 )
 from datetime import datetime, timedelta
 import sys
-import os
-
-# Ensure the path to the ETL function is available
-sys.path.append(os.path.join(os.path.dirname(__file__), '../football-and-spark/backend/data'))
-print(os.getcwd())
-
-# sys.path.append(os.path.join(os.path.dirname(__file__), '../football-and-spark/data'))
-from get_all_leagues import get_leagues_etl
 
 default_args = {
 	'owner': 'airflow',
 	'depends_on_past': False,
 	'start_date': datetime(2025, 1, 1),
 	'retries': 1,
-	'retry_delay': timedelta(minutes=5),
+	'retry_delay': timedelta(minutes=1),
 }
 
 with DAG(

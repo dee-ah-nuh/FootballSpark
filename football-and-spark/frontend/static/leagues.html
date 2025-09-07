@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Football Leagues</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#f6f7f9; color:#222; }
+    .wrap { max-width: 760px; margin: 40px auto; padding: 0 16px; }
+    h1 { margin: 0 0 16px; }
+    .toolbar { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+    input[type="search"] { flex:1; padding:10px 12px; border:1px solid #d0d7de; border-radius:8px; }
+    .status { font-size: 0.95rem; color:#6b7280; margin: 8px 0 16px; }
+    ul { list-style:none; padding:0; margin:0; }
+    li { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; margin:8px 0;
+         display:flex; justify-content:space-between; align-items:center; }
+    .country { color:#6b7280; font-size:0.95rem; }
+    .empty { padding:16px; text-align:center; color:#6b7280; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>⚽ Football Leagues</h1>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search leagues or countries…" aria-label="Search leagues" />
+    </div>
+
+    <div id="status" class="status">Loading leagues…</div>
+    <ul id="leagues-list" role="list"></ul>
+    <div id="empty" class="empty" style="display:none;">No matches found.</div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:8000/leagues';
+
+    const listEl = document.getElementById('leagues-list');
+    const statusEl = document.getElementById('status');
+    const emptyEl  = document.getElementById('empty');
+    const searchEl = document.getElementById('search');
+
+    let allLeagues = [];
+
+    async function loadLeagues() {
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Network error');
+        allLeagues = await res.json();
+        statusEl.textContent = `Loaded ${allLeagues.length} leagues`;
+        render(allLeagues);
+      } catch (err) {
+        statusEl.textContent = '⚠️ Could not load leagues.';
+        console.error(err);
+      }
+    }
+
+    function render(items) {
+      listEl.innerHTML = '';
+      if (!items.length) {
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      for (const league of items) {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${league.league_name}</span>
+          <span class="country">${league.country_name ?? ''}</span>
+        `;
+        listEl.appendChild(li);
+      }
+    }
+
+    // Simple debounce to avoid filtering every keystroke too often
+    function debounce(fn, delay = 200) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function applyFilter(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) return render(allLeagues);
+
+      const filtered = allLeagues.filter(l =>
+        (l.league_name || '').toLowerCase().includes(q) ||
+        (l.country_name || '').toLowerCase().includes(q)
+      );
+      render(filtered);
+    }
+
+    searchEl.addEventListener('input', debounce(e => applyFilter(e.target.value), 200));
+
+    loadLeagues();
+  </script>
+</body>
+</html>
