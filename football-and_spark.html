@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Football Data Marketplace — Downloadable CSV & Parquet</title>
+  <style>
+    :root{
+      --bg:#0f1221; --card:#121633; --muted:#8ea0ff; --text:#e6e9ff; --accent:#7c9cff; --chip:#212751;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 800px at 80% -10%,#1b2153,transparent),radial-gradient(900px 700px at -10% 10%,#18204a,transparent),var(--bg);color:var(--text);}
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:auto;padding:32px}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-weight:800;letter-spacing:.4px}
+    .pill{padding:6px 10px;border-radius:999px;background:var(--chip);color:var(--muted);font-size:12px}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;margin-top:24px}
+    .h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 12px}
+    .lede{color:#cbd3ff;max-width:52ch}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .btn{background:linear-gradient(135deg,#6c86ff,#7cc0ff);color:#0b1025;border:none;border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(124,156,255,.35);transition:transform .06s ease,filter .2s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.secondary{background:transparent;color:var(--muted);border:1px solid #2a3270;box-shadow:none}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+    .card{background:var(--card);border:1px solid #242a63;border-radius:18px;padding:18px}
+    .card h3{margin:4px 0 10px;font-size:16px}
+    .card p{margin:0;color:#cbd3ff;font-size:14px}
+    .kpi{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:12px}
+
+    .section{margin-top:48px}
+    .section h2{font-size:22px;margin:0 0 10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    ul{margin:0;padding-left:18px}
+
+    .form{background:var(--card);border:1px solid #242a63;border-radius:18px;padding:18px}
+    .form label{font-size:14px;color:#cbd3ff}
+    .input{width:100%;padding:12px 14px;border-radius:12px;background:#0d1130;border:1px solid #252c63;color:var(--text);margin-top:8px}
+    .note{font-size:12px;color:#aab3ff;margin-top:8px}
+
+    footer{opacity:.7;margin:42px 0 12px;font-size:12px}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+    @media (max-width:640px){.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      $1⚽ Football Data$2
+      $1Data Marketplace$2
+    </nav>
+
+    <header class="hero">
+      <div>
+        <h1 class="h1">Football data, <span style="color:var(--muted)">ready to download</span>.</h1>
+        <p class="lede">A curated, versioned database built from API‑Football: browse leagues and seasons, then download clean CSV or Parquet slices (fixtures, lineups, stats, events) without writing API code.</p>
+        <div class="cta-row">
+          <a href="#signup" class="btn">Download Free Sample</a>
+          <a href="#how" class="btn secondary">Browse Catalog</a>
+        </div>
+        <div class="cta-row">
+          <span class="chip">JSON → tidy tables</span>
+          <span class="chip">Match‑level features</span>
+          <span class="chip">Forecast & evaluate</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kpi"><span class="chip">Goal</span><strong>Simple, reliable downloads</strong></div>
+        <p>• Historical snapshots & rolling updates<br/>• Partitioned by league/season/fixture for fast sync<br/>• Checksums, sizes, and schema versions for trust</p>
+      </div>
+    </header>
+
+    <section class="cards" aria-label="Highlights">
+      <div class="card">
+        <h3>1) Ingest</h3>
+        <p>Pull from API‑Football with paging, retries, and caching of raw JSON.</p>
+      </div>
+      <div class="card">
+        <h3>2) Normalize</h3>
+        <p>Flatten nested JSON into tidy tables (leagues, seasons, fixtures, lineups, stats, events).</p>
+      </div>
+      <div class="card">
+        <h3>3) Deliver</h3>
+        <p>Write CSV & Parquet to CDN-backed storage with signed URLs and versioned paths.</p>
+      </div>
+    </section>
+
+    <section id="how" class="section">
+      <h2>What you get</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Datasets Catalog</h3>
+          <p><strong>leagues</strong>, <strong>seasons</strong>, <strong>teams</strong>, <strong>venues</strong>,<br/>
+             <strong>fixtures</strong>, <strong>fixture_lineups</strong>, <strong>fixture_stats_team</strong>,<br/>
+             <strong>fixture_stats_players</strong>, <strong>fixture_events</strong></p>
+        </div>
+        <div class="card">
+          <h3>Access Options</h3>
+          <ul>
+            <li>Free sample: a small slice to try</li>
+            <li>Pro: latest + historical by chosen leagues</li>
+            <li>Enterprise: bulk S3/R2 sync & custom slices</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Licensing & Attribution</h3>
+          <ul>
+            <li>Built from API‑Football data</li>
+            <li>Attribution included where required</li>
+            <li>We distribute our processing & hosting</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Formats & Delivery</h3>
+          <ul>
+            <li>CSV & Parquet (Snappy)</li>
+            <li>Versioned paths (v1, v2…) & changelogs</li>
+            <li>Signed URLs, checksums, file manifests</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="signup" class="section">
+      <div class="form">
+        <h2>Get Updates & Access</h2>
+        <p class="lede">Join the waitlist to receive the free sample and updates when new league/season drops land.</p>
+        <form action="#" method="post" onsubmit="alert('Thanks! We\'ll send the sample shortly.'); return false;">
+          <label for="email">Email</label>
+          <input class="input" type="email" id="email" name="email" placeholder="you@example.com" required />
+          <div class="cta-row" style="margin-top:12px">
+            <button class="btn" type="submit">Request Access</button>
+            <a class="btn secondary" href="mailto:team@example.com?subject=Football%20Data%20Marketplace%20—%20Access">Contact Us</a>
+          </div>
+          <div class="note">One or two emails per month. Unsubscribe anytime.</div>
+        </form>
+      </div>
+    </section>
+
+    <footer>© 2025 Football Data Marketplace. Not affiliated with API‑Football; terms of use apply.</footer>
+  </div>
+</body>
+</html>
