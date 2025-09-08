@@ -15,6 +15,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 class League(BaseModel):
     league_id: int
@@ -31,6 +33,9 @@ class LeagueSeasons(BaseModel):
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
+
+# server-rendered templates
+templates = Jinja2Templates(directory="football-and-spark/frontend/templates")
 
 origins = [
     "http://localhost:3000"]

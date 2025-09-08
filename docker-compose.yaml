@@ -74,7 +74,7 @@ x-airflow-common:
     # The following line can be used to set a custom config file, stored in the local config folder
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     # Location of the football database
-    FOOTBALL_DB_PATH: /opt/airflow/football-and-spark/database/football_data.db
+    FOOTBALL_DB_PATH: /opt/airflow/football-and-spark/backend/database/football_data.db
 
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags

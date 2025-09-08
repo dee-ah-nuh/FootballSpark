@@ -2,97 +2,741 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Football Leagues</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football Leagues Explorer</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#f6f7f9; color:#222; }
-    .wrap { max-width: 760px; margin: 40px auto; padding: 0 16px; }
-    h1 { margin: 0 0 16px; }
-    .toolbar { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
-    input[type="search"] { flex:1; padding:10px 12px; border:1px solid #d0d7de; border-radius:8px; }
-    .status { font-size: 0.95rem; color:#6b7280; margin: 8px 0 16px; }
-    ul { list-style:none; padding:0; margin:0; }
-    li { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; margin:8px 0;
-         display:flex; justify-content:space-between; align-items:center; }
-    .country { color:#6b7280; font-size:0.95rem; }
-    .empty { padding:16px; text-align:center; color:#6b7280; }
+    * { box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; 
+      margin: 0; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333; 
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    
+    .container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+      padding: 0 20px; 
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.8s ease;
+    }
+    
+    h1 { 
+      margin: 0 0 16px; 
+      color: white;
+      font-size: 3rem;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    
+    .subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.2rem;
+      margin-bottom: 0;
+    }
+    
+    .controls {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    .search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 16px 50px 16px 50px;
+      border: 2px solid #e2e8f0;
+      border-radius: 50px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 18px;
+    }
+    
+    .clear-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .clear-btn.show {
+      opacity: 1;
+    }
+    
+    .clear-btn:hover {
+      background: #dc2626;
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .view-toggle {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 4px;
+    }
+    
+    .view-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .view-btn.active {
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      color: #667eea;
+    }
+    
+    .sort-select {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    
+    .stat-item {
+      background: rgba(255,255,255,0.9);
+      padding: 15px 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 120px;
+      animation: fadeIn 1s ease;
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+      display: block;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    
+    .leagues-container {
+      animation: fadeInUp 1s ease;
+    }
+    
+    .leagues-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    .leagues-list {
+      display: block;
+    }
+    
+    .league-card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 12px 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .league-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .league-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    
+    .league-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .league-card.selected {
+      border: 2px solid #667eea;
+      transform: translateY(-3px);
+    }
+    
+    .league-card.selected::before {
+      transform: scaleX(1);
+    }
+    
+    .league-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .league-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0;
+      line-height: 1.3;
+    }
+    
+    .league-flag {
+      font-size: 1.5rem;
+      margin-left: 12px;
+    }
+    
+    .league-country {
+      color: #64748b;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    
+    .league-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px;
+      color: white;
+      font-size: 1.2rem;
+    }
+    
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 15px;
+    }
+    
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      color: #64748b;
+    }
+    
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+    
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid #ef4444;
+      color: #dc2626;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .floating-action {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+    
+    .floating-action:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .controls { padding: 20px; }
+      .filters { justify-content: center; }
+      .leagues-grid { grid-template-columns: 1fr; }
+      .floating-action { bottom: 20px; right: 20px; }
+      .stats { gap: 10px; }
+      .stat-item { padding: 10px 15px; min-width: 100px; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>⚽ Football Leagues</h1>
-
-    <div class="toolbar">
-      <input id="search" type="search" placeholder="Search leagues or countries…" aria-label="Search leagues" />
+  <div class="container">
+    <div class="header">
+      <h1>⚽ Football Leagues Explorer</h1>
+      <p class="subtitle">Discover football leagues from around the world</p>
     </div>
 
-    <div id="status" class="status">Loading leagues…</div>
-    <ul id="leagues-list" role="list"></ul>
-    <div id="empty" class="empty" style="display:none;">No matches found.</div>
+    <div class="controls">
+      <div class="search-container">
+        <div class="search-icon">🔍</div>
+        <input 
+          id="search" 
+          type="search" 
+          class="search-input"
+          placeholder="Search leagues, countries, or regions..." 
+          aria-label="Search leagues"
+        />
+        <button id="clear-btn" class="clear-btn" title="Clear search">✕</button>
+      </div>
+      
+      <div class="filters">
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="grid">
+            <span>📊</span> Grid
+          </button>
+          <button class="view-btn" data-view="list">
+            <span>📋</span> List
+          </button>
+        </div>
+        
+        <select class="sort-select" id="sort-select">
+          <option value="name">Sort by Name</option>
+          <option value="country">Sort by Country</option>
+          <option value="random">Random Order</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-number" id="total-leagues">0</span>
+        <div class="stat-label">Total Leagues</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="countries-count">0</span>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="filtered-count">0</span>
+        <div class="stat-label">Showing</div>
+      </div>
+    </div>
+
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      Loading leagues...
+    </div>
+
+    <div id="error" class="error" style="display: none;">
+      ⚠️ Could not load leagues. Please check your connection and try again.
+      <button onclick="loadLeagues()" style="margin-left: 10px; padding: 5px 15px; border: none; background: #ef4444; color: white; border-radius: 5px; cursor: pointer;">Retry</button>
+    </div>
+
+    <div id="leagues-container" class="leagues-container" style="display: none;">
+      <div id="leagues-list" class="leagues-grid"></div>
+    </div>
+
+    <div id="empty" class="empty" style="display: none;">
+      <div class="empty-icon">🔍</div>
+      <h3>No leagues found</h3>
+      <p>Try adjusting your search terms or clear the search to see all leagues.</p>
+    </div>
   </div>
+
+  <button class="floating-action" onclick="scrollToTop()" title="Back to top">↑</button>
 
   <script>
     const API_URL = 'http://localhost:8000/leagues';
 
+    // DOM elements
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const containerEl = document.getElementById('leagues-container');
     const listEl = document.getElementById('leagues-list');
-    const statusEl = document.getElementById('status');
-    const emptyEl  = document.getElementById('empty');
+    const emptyEl = document.getElementById('empty');
     const searchEl = document.getElementById('search');
+    const clearBtn = document.getElementById('clear-btn');
+    const sortSelect = document.getElementById('sort-select');
+    const totalLeaguesEl = document.getElementById('total-leagues');
+    const countriesCountEl = document.getElementById('countries-count');
+    const filteredCountEl = document.getElementById('filtered-count');
 
+    // State
     let allLeagues = [];
+    let filteredLeagues = [];
+    let currentView = 'grid';
+    let selectedLeague = null;
 
+    // Country flags mapping (partial)
+    const countryFlags = {
+      'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+      'Spain': '🇪🇸',
+      'Germany': '🇩🇪',
+      'Italy': '🇮🇹',
+      'France': '🇫🇷',
+      'Brazil': '🇧🇷',
+      'Argentina': '🇦🇷',
+      'Netherlands': '🇳🇱',
+      'Portugal': '🇵🇹',
+      'Belgium': '🇧🇪',
+      'Turkey': '🇹🇷',
+      'Russia': '🇷🇺',
+      'Mexico': '🇲🇽',
+      'United States': '🇺🇸',
+      'Japan': '🇯🇵',
+      'South Korea': '🇰🇷',
+      'Australia': '🇦🇺',
+      'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+      'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+      'Ireland': '🇮🇪',
+      'Poland': '🇵🇱',
+      'Sweden': '🇸🇪',
+      'Norway': '🇳🇴',
+      'Denmark': '🇩🇰',
+      'Switzerland': '🇨🇭',
+      'Austria': '🇦🇹',
+      'Czech Republic': '🇨🇿',
+      'Greece': '🇬🇷',
+      'Croatia': '🇭🇷',
+      'Serbia': '🇷🇸',
+      'Ukraine': '🇺🇦',
+      'Colombia': '🇨🇴',
+      'Chile': '🇨🇱',
+      'Uruguay': '🇺🇾',
+      'Peru': '🇵🇪',
+      'Ecuador': '🇪🇨',
+      'Canada': '🇨🇦'
+    };
+
+    // Load leagues from API
     async function loadLeagues() {
       try {
+        loadingEl.style.display = 'flex';
+        errorEl.style.display = 'none';
+        containerEl.style.display = 'none';
+
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('Network error');
+        
         allLeagues = await res.json();
-        statusEl.textContent = `Loaded ${allLeagues.length} leagues`;
-        render(allLeagues);
+        filteredLeagues = [...allLeagues];
+        
+        updateStats();
+        render();
+        
+        loadingEl.style.display = 'none';
+        containerEl.style.display = 'block';
+        
+        // Add entrance animation delay
+        setTimeout(() => {
+          containerEl.style.opacity = '1';
+        }, 100);
+        
       } catch (err) {
-        statusEl.textContent = '⚠️ Could not load leagues.';
-        console.error(err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        console.error('Failed to load leagues:', err);
       }
     }
 
-    function render(items) {
+    // Update statistics
+    function updateStats() {
+      const uniqueCountries = new Set(allLeagues.map(l => l.country_name).filter(Boolean));
+      
+      totalLeaguesEl.textContent = allLeagues.length;
+      countriesCountEl.textContent = uniqueCountries.size;
+      filteredCountEl.textContent = filteredLeagues.length;
+      
+      // Animate numbers
+      animateNumber(totalLeaguesEl, allLeagues.length);
+      animateNumber(countriesCountEl, uniqueCountries.size);
+      animateNumber(filteredCountEl, filteredLeagues.length);
+    }
+
+    // Animate number counting
+    function animateNumber(element, target) {
+      let current = 0;
+      const increment = target / 30;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current);
+      }, 50);
+    }
+
+    // Render leagues
+    function render() {
       listEl.innerHTML = '';
-      if (!items.length) {
+      
+      if (!filteredLeagues.length) {
         emptyEl.style.display = 'block';
         return;
       }
+      
       emptyEl.style.display = 'none';
-
-      for (const league of items) {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${league.league_name}</span>
-          <span class="country">${league.country_name ?? ''}</span>
+      
+      filteredLeagues.forEach((league, index) => {
+        const card = document.createElement('div');
+        card.className = 'league-card';
+        card.onclick = () => toggleLeagueSelection(card, league);
+        
+        const flag = countryFlags[league.country_name] || '🌍';
+        
+        card.innerHTML = `
+          <div class="league-header">
+            <h3 class="league-name">${league.league_name || 'Unknown League'}</h3>
+            <span class="league-flag">${flag}</span>
+          </div>
+          <div class="league-country">
+            📍 ${league.country_name || 'Unknown Country'}
+          </div>
+          <div class="league-meta">
+            <span>League #${league.league_id || 'N/A'}</span>
+            <span>Click to select</span>
+          </div>
         `;
-        listEl.appendChild(li);
+        
+        // Add stagger animation
+        card.style.animationDelay = `${index * 0.05}s`;
+        card.style.animation = 'fadeInUp 0.6s ease forwards';
+        
+        listEl.appendChild(card);
+      });
+      
+      updateStats();
+    }
+
+    // Toggle league selection
+    function toggleLeagueSelection(card, league) {
+      // Remove previous selection
+      document.querySelectorAll('.league-card').forEach(c => c.classList.remove('selected'));
+      
+      if (selectedLeague?.league_id === league.league_id) {
+        selectedLeague = null;
+      } else {
+        card.classList.add('selected');
+        selectedLeague = league;
+        
+        // Show selection feedback
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          card.style.transform = '';
+        }, 150);
       }
     }
 
-    // Simple debounce to avoid filtering every keystroke too often
-    function debounce(fn, delay = 200) {
-      let t;
+    // Apply filters
+    function applyFilter(query) {
+      const q = query.trim().toLowerCase();
+      
+      if (!q) {
+        filteredLeagues = [...allLeagues];
+      } else {
+        filteredLeagues = allLeagues.filter(league =>
+          (league.league_name || '').toLowerCase().includes(q) ||
+          (league.country_name || '').toLowerCase().includes(q)
+        );
+      }
+      
+      applySort();
+      render();
+      
+      // Show/hide clear button
+      clearBtn.classList.toggle('show', q.length > 0);
+    }
+
+    // Apply sorting
+    function applySort() {
+      const sortBy = sortSelect.value;
+      
+      switch (sortBy) {
+        case 'name':
+          filteredLeagues.sort((a, b) => 
+            (a.league_name || '').localeCompare(b.league_name || '')
+          );
+          break;
+        case 'country':
+          filteredLeagues.sort((a, b) => 
+            (a.country_name || '').localeCompare(b.country_name || '')
+          );
+          break;
+        case 'random':
+          filteredLeagues.sort(() => Math.random() - 0.5);
+          break;
+      }
+    }
+
+    // Toggle view mode
+    function toggleView(view) {
+      currentView = view;
+      
+      // Update button states
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+      
+      // Update list classes
+      listEl.className = view === 'grid' ? 'leagues-grid' : 'leagues-list';
+    }
+
+    // Scroll to top
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Debounce function
+    function debounce(fn, delay = 300) {
+      let timeoutId;
       return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), delay);
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
       };
     }
 
-    function applyFilter(query) {
-      const q = query.trim().toLowerCase();
-      if (!q) return render(allLeagues);
+    // Event listeners
+    searchEl.addEventListener('input', debounce(e => applyFilter(e.target.value)));
+    clearBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      applyFilter('');
+      searchEl.focus();
+    });
 
-      const filtered = allLeagues.filter(l =>
-        (l.league_name || '').toLowerCase().includes(q) ||
-        (l.country_name || '').toLowerCase().includes(q)
-      );
-      render(filtered);
-    }
+    sortSelect.addEventListener('change', () => {
+      applySort();
+      render();
+    });
 
-    searchEl.addEventListener('input', debounce(e => applyFilter(e.target.value), 200));
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => toggleView(btn.dataset.view));
+    });
 
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchEl.value = '';
+        applyFilter('');
+      }
+      if (e.key === '/' && e.target !== searchEl) {
+        e.preventDefault();
+        searchEl.focus();
+      }
+    });
+
+    // Initialize
     loadLeagues();
   </script>
 </body>
