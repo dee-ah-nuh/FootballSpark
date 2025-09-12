@@ -6,22 +6,22 @@ DAGS_DIR = Path(__file__).resolve().parent
 DATA_DIR = (DAGS_DIR / ".." / "football-and-spark" / "backend" / "data").resolve()
 UTILS_DIR = (DAGS_DIR / ".." / "football-and-spark" / "backend" / "database" / "utils").resolve()
 
+print('DAGS_DIR:', DAGS_DIR)
+print('UTILS_DIR:', UTILS_DIR)
+
+
 for p in (DATA_DIR, UTILS_DIR):
     if not p.exists():
         raise RuntimeError(f"Missing mount: {p}")
     sys.path.insert(0, str(p))
 
-from get_all_leagues import get_leagues_etl 
+from get_all_leagues import get_leagues_etl  # ----------------- type: ignore
 
 
 from airflow import DAG
 # Airflow 3.x
 from airflow.providers.standard.operators.python import (
     PythonOperator,
-    BranchPythonOperator,
-    ShortCircuitOperator,
-    PythonVirtualenvOperator,
-    ExternalPythonOperator,
 )
 from datetime import datetime, timedelta
 import sys

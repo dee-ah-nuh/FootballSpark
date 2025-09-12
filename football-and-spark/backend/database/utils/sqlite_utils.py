@@ -1,7 +1,12 @@
-# sqlite_utils.py (or central settings module)
-from pathlib import Path
+# sqlite_utils.py
 import os
+import sqlite3
+import logging
+from pathlib import Path
+import pandas as pd
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 DB_PATH = os.getenv("FOOTBALL_DB_PATH")
 
@@ -12,33 +17,43 @@ if not DB_PATH:
         root_idx = parts.index("football-and-spark")
         REPO_ROOT = Path(*parts[: root_idx + 1])
     else:
-        # fallback to two parents – adjust if your layout differs
-        REPO_ROOT = this_file.parents[2]
+        REPO_ROOT = this_file.parents[1]
 
     DB_PATH = str(REPO_ROOT / "backend" / "database" / "football_data.db")
 
 DB_PATH = Path(DB_PATH)
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)  # ensure directory exists
 
+logger.info(f"sqlite_utils initialized with DB_PATH={DB_PATH}")
 
-import sqlite3
-import os
-import pandas as pd
 
 def insert_dataframe_to_stage_table(db_path, df, table_name):
     """
     Inserts a pandas DataFrame into the specified SQLite table.
     """
-    conn = sqlite3.connect(db_path)
+    db_path = Path(db_path).resolve()
+    logger.info(f"insert_dataframe_to_stage_table called")
+    logger.info(f"Resolved db_path={db_path}")
+    logger.info(f"Files under {db_path.parent}: {list(db_path.parent.glob('*'))}")
+
+    try:
+        conn = sqlite3.connect(str(db_path))
+        logger.info(f"Connected to database at {db_path}")
+    except Exception as e:
+        logger.error(f"Failed to connect to SQLite at {db_path}: {e}", exc_info=True)
+        raise
+
     try:
         conn.execute(f"DELETE FROM {table_name};")
-        print(f"Deleted all rows from table {table_name}.")
+        logger.info(f"Deleted all rows from table {table_name}")
     except sqlite3.OperationalError as e:
-        print(f"Could not truncate table {table_name}: {e}")
+        logger.warning(f"Could not truncate table {table_name}: {e}")
+
     try:
-        df.to_sql(table_name, conn, if_exists='append', index=False)
-        print(f"Inserted {len(df)} rows into {table_name}.")
+        df.to_sql(table_name, conn, if_exists="append", index=False)
+        logger.info(f"Inserted {len(df)} rows into {table_name}")
     except Exception as e:
-        print(f"Error inserting into {table_name}: {e}")
+        logger.error(f"Error inserting into {table_name}: {e}", exc_info=True)
+        raise
     finally:
         conn.close()
+        logger.info("Connection closed")

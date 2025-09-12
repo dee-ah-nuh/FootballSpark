@@ -1,0 +1,17 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore SQLite DBs
+*.db
+
+# Ignore Airflow logs
+logs/
+
+# Ignore environment files
+.env
+
+# Airflow logs
+logs/

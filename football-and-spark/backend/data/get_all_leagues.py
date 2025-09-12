@@ -1,12 +1,14 @@
 import http.client
-import json 
-import os 
+import json
+import os
 import pandas as pd
 import sqlite3
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../database/utils'))
-from sqlite_utils import insert_dataframe_to_stage_table  # type: ignore
+from sqlite_utils import insert_dataframe_to_stage_table, DB_PATH  # type: ignore
+db_path = str(DB_PATH)
+
 
 # Fetch all leagues from API-Football and save to JSON
 def get_all_leagues():
@@ -25,7 +27,7 @@ def get_all_leagues():
     data = res.read()
     # data = data.decode("utf-8")
 
-    print(data)
+    # print(data)
 
     data = json.loads(data)
 
